@@ -4,3 +4,10 @@ package configs
 type LogConfig struct {
 	Level string `mapstructure:"logLevel"`
 }
+
+type repoConfig struct {
+	URL        string `mapstructure:"url"`
+	PlayerName string `mapstructure:"playerName"`
+}
+
+type Players []repoConfig

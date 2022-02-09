@@ -1,5 +1,6 @@
 package configs
 
 const (
-	Component = "component"
+	Component          = "component"
+	PlayersConfigsPath = "players"
 )
