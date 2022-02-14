@@ -4,18 +4,10 @@ import (
 	"io/ioutil"
 	"strings"
 
-	//"github.com/2kodevs/domline/internal/utils"
-
-	"github.com/2kodevs/domline/internal/utils"
 	"github.com/spf13/viper"
 )
 
-func GetConfigs(repo string, folderpath string) (Players, error) {
-	err := utils.WGet(repo, folderpath)
-	if err != nil {
-		return nil, err
-	}
-
+func GetConfigs(folderpath string) (Players, error) {
 	files, err := ioutil.ReadDir(folderpath)
 	if err != nil {
 		return nil, err

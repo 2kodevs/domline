@@ -7,6 +7,7 @@ type LogConfig struct {
 
 type repoConfig struct {
 	URL        string `mapstructure:"url"`
+	Branch     string `mapstructure:"branch"`
 	PlayerName string `mapstructure:"playerName"`
 }
 
