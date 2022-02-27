@@ -31,7 +31,6 @@ import (
 	"text/template"
 
 	"github.com/2kodevs/domline/configs"
-	log "github.com/sirupsen/logrus"
 )
 
 /*
@@ -41,10 +40,8 @@ Executes a command and returns the output.
 params :-
 a. cmd string
 The command to be executed.
-b. bool output
+b. bool getOutput
 True if the output is to be returned.
-b. args []string
-The arguments to be passed to the command.
 
 returns :-
 a. string
@@ -52,26 +49,32 @@ The output of the command.
 b. error
 Error if any
 */
-func RunCmd(cmd string, output bool, args ...string) (string, error) {
-	log.Info(configs.RunningCMD)
-	fullCmd := fmt.Sprintf(cmd, args)
-	tmp, err := template.New("script").Parse(fullCmd)
+func RunCmd(cmd string, getOutput bool) (out string, err error) {
+	tmp, err := template.New("script").Parse(cmd)
 	if err != nil {
 		return "", err
 	}
 
-	return ExecuteScript(tmp, output, struct{}{})
+	script := Script{
+		Tmp:       tmp,
+		GetOutput: getOutput,
+		Data:      struct{}{},
+	}
+
+	if out, err = ExecuteScript(script); err != nil {
+		return "", fmt.Errorf(configs.RunningCMDError, cmd, err)
+	}
+
+	return out, nil
 }
 
 /*
-executeScript :
+ExecuteScript :
 Execute the script in the given template.
 
 params :-
-a. tmp *template.Template
-Script template
-b. output bool
-True if the output is to be returned. False to print the output to stdout and stderr
+a. script Script
+Script object to be executed
 
 returns :-
 a. string
@@ -79,9 +82,9 @@ The output of the script.
 b. error
 Error if any
 */
-func ExecuteScript(tmp *template.Template, output bool, data interface{}) (out string, err error) {
-	var script, combinedOut bytes.Buffer
-	if err = tmp.Execute(&script, data); err != nil {
+func ExecuteScript(script Script) (out string, err error) {
+	var scriptBuffer, combinedOut bytes.Buffer
+	if err = script.Tmp.Execute(&scriptBuffer, script.Data); err != nil {
 		return
 	}
 
@@ -103,11 +106,12 @@ func ExecuteScript(tmp *template.Template, output bool, data interface{}) (out s
 	wait := sync.WaitGroup{}
 
 	errChans := make([]<-chan error, 0)
-	errChans = append(errChans, goCopy(&wait, stdin, &script, true))
-	if output {
+	errChans = append(errChans, goCopy(&wait, stdin, &scriptBuffer, true))
+	if script.GetOutput {
 		cmd.Stdout = &combinedOut
 		cmd.Stderr = &combinedOut
 	} else {
+		fmt.Println(114)
 		errChans = append(errChans, goCopy(&wait, os.Stdout, stdout, false))
 		errChans = append(errChans, goCopy(&wait, os.Stderr, stderr, false))
 	}
@@ -129,7 +133,7 @@ func ExecuteScript(tmp *template.Template, output bool, data interface{}) (out s
 		return
 	}
 
-	if output {
+	if script.GetOutput {
 		out = combinedOut.String()
 	}
 

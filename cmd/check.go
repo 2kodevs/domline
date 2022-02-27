@@ -52,9 +52,16 @@ to quickly create a Cobra application.`,
 			log.Fatal(err)
 		}
 
+		log.Debugf("Players: %+v", players)
+		if len(players) == 0 {
+			log.Fatal(configs.NotPlayersFoundError)
+		}
+
 		for _, p := range players {
 			splitted := strings.Split(p.URL, "/")
 			id := splitted[len(splitted)-1]
+
+			log.Debugf(configs.Player, p)
 
 			checkData := templates.CheckData{
 				Repo:   p.URL,
@@ -72,7 +79,12 @@ to quickly create a Cobra application.`,
 				return
 			}
 
-			if _, err := utils.ExecuteScript(tmp, false, checkData); err != nil {
+			script := utils.Script{
+				Tmp:       tmp,
+				GetOutput: false,
+				Data:      checkData,
+			}
+			if _, err := utils.ExecuteScript(script); err != nil {
 				log.Fatal(err)
 			}
 
