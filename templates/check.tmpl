@@ -1,4 +1,4 @@
-{{/* lighthouse.tmpl */}}
+{{/* check.tmpl */}}
 #!/bin/sh
 
 {{if .Dir}}
@@ -7,10 +7,11 @@ git clone {{.Repo}}.git {{.Dir}}
 git clone {{.Repo}}.git
 {{end}}
 
+cd {{.Dir}}
+
 {{if .Branch}}
 git checkout {{.Branch}}
 {{end}}
 
-cd {{.Dir}}
 docker build -t {{.Tag}} .
 docker run --rm -v {{.Tag}}
