@@ -14,4 +14,4 @@ git checkout {{.Branch}}
 {{end}}
 
 docker build -t {{.Tag}} .
-docker run --rm -v {{.Tag}}
+docker run --rm {{.Tag}}
