@@ -15,9 +15,9 @@ func GetConfigs(folderpath string) (Players, error) {
 
 	var players Players
 	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".yaml") {
+		if strings.HasSuffix(file.Name(), ".yml") {
 			viper.AddConfigPath(folderpath)
-			viper.SetConfigType("yaml")
+			viper.SetConfigType("yml")
 			viper.SetConfigName(file.Name())
 			err := viper.ReadInConfig()
 			if err != nil {
