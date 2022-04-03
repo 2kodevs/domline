@@ -4,6 +4,7 @@
 docker run --rm --name domline-{{.Tag}} -d -p 8080:8080 {{.Tag}}
 
 git clone {{.ManagerRepo}}.git manager
+pip install -r manager/src/games/domino/requirements.txt
 {{$ManagerFile := "manager/src/games/domino/domino.py"}}
 
 for i in {0..30}
