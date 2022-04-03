@@ -1,21 +1,8 @@
 {{/* check.tmpl */}}
-#!/bin/sh
-
-{{if .Dir}}
-git clone {{.Repo}}.git {{.Dir}}
-{{else}}
-git clone {{.Repo}}.git
-{{end}}
-
-cd {{.Dir}}
-
-{{if .Branch}}
-git checkout {{.Branch}}
-{{end}}
-
-docker build -t {{.Tag}} .
-docker run --rm --name domline{{.Tag}} -d {{.Tag}}
+{{ define "main" }}
+docker run --rm --name domline-{{.Tag}} -d {{.Tag}}
 sleep 5
-[ "$(docker top domline{{.Tag}} | wc -l)" > 1 ]
+[ "$(docker top domline-{{.Tag}} | wc -l)" > 1 ]
 # "docker top" should have at least two lines
 # -- ps headers and a line for a process running in the container
+{{ end }}

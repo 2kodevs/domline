@@ -22,12 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"strings"
-	"text/template"
-
 	"github.com/2kodevs/domline/configs"
 	"github.com/2kodevs/domline/internal/utils"
-	"github.com/2kodevs/domline/templates"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -52,44 +48,9 @@ to quickly create a Cobra application.`,
 			log.Fatal(err)
 		}
 
-		log.Debugf("Players: %+v", players)
-		if len(players) == 0 {
-			log.Fatal(configs.NotPlayersFoundError)
+		if err = utils.Workflow(players, "check.tmpl"); err != nil {
+			log.Fatal(err)
 		}
-
-		for _, p := range players {
-			splitted := strings.Split(p.URL, "/")
-			id := splitted[len(splitted)-1]
-
-			log.Debugf(configs.Player, p)
-
-			checkData := templates.CheckData{
-				Repo:   p.URL,
-				Branch: p.Branch,
-				Dir:    id,
-				Tag:    id,
-			}
-
-			rawScript, err := templates.Templates.ReadFile("check.tmpl")
-			if err != nil {
-				log.Fatal(err)
-			}
-			tmp, err := template.New("script").Parse(string(rawScript))
-			if err != nil {
-				return
-			}
-
-			script := utils.Script{
-				Tmp:       tmp,
-				GetOutput: false,
-				Data:      checkData,
-			}
-			if _, err := utils.ExecuteScript(script); err != nil {
-				log.Fatal(err)
-			}
-
-		}
-
 	},
 }
 
