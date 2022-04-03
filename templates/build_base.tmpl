@@ -1,0 +1,21 @@
+{{/*build_base.tmpl */}}
+{{ define "build" }}
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+{{if .Dir}}
+git clone {{.Repo}}.git {{.Dir}}
+{{else}}
+git clone {{.Repo}}.git
+{{end}}
+
+cd {{.Dir}}
+
+{{if .Branch}}
+git checkout {{.Branch}}
+{{end}}
+
+docker build -t {{.Tag}} .
+{{template "main" .}}
+{{ end }}
