@@ -1,0 +1,21 @@
+{{/* random_play.tmpl */}}
+{{ define "main" }}
+
+docker run --rm --name domline-{{.Tag}} -d -p 8080:8080 {{.Tag}}
+
+git clone {{.ManagerRepo}}.git manager
+{{$ManagerFile := "manager/src/games/domino/domino.py"}}
+
+for i in {0..30}
+do
+    OUT=$(python {{$ManagerFile}} play -p0 Remote http://127.0.0.1:8080 -p1 Random -p2 Random -p3 Random -r firstdoble -v)
+    # {-1: [0-1], 0: [0-1], 1: [0-1]}
+    if ! [[ "$OUT" =~ ^\{-1:[[:blank:]][0-1],[[:blank:]]0:[[:blank:]][0-1],[[:blank:]]1:[[:blank:]][0-1]\}$ ]]; then
+        echo "Bad Player"
+        exit 1
+    fi
+done
+
+echo "Player OK"
+
+{{ end }}

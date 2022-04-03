@@ -5,4 +5,5 @@ const (
 	PlayersConfigsPath = "players"
 	RunningCMD         = "Running command: %s"
 	Player             = "Player: %s"
+	ManagerEnvV        = "MANAGER_REPO"
 )
